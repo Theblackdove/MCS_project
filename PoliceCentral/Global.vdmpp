@@ -1,0 +1,48 @@
+class Global
+
+values  
+
+    public taskPriority : map TaskType to Priority =
+    {
+        <TaskA> |-> 1,  -- Lowest priority
+        <TaskB> |-> 2,
+        <TaskC> |-> 3,
+        <TaskD> |-> 4   -- Highest priority               
+    };
+
+    public patrolePriority : map PatroleType to nat =
+    {
+        <PatroleA> |-> 1,
+        <PatroleB> |-> 2, 
+        <PatroleC> |-> 3,
+        <PatroleD> |-> 4
+    };
+
+types
+
+    public Time = nat;
+
+    public ID = nat
+    inv id == id >= 0;
+
+    public Priority = nat
+    inv p == p >= 0;
+    
+    public Coordinates :: 
+        x : nat 
+        y : nat;
+
+    public Task ::
+        id       : ID
+        coord    : Coordinates
+        t_type   : TaskType
+        t        : Time
+        duration : Time;
+
+    public PatroleType = <PatroleA> | <PatroleB> | <PatroleC> | <PatroleD> | <None>;
+
+    public TaskType = <TaskA> | <TaskB> | <TaskC> | <TaskD> | <None>;
+    
+    public String = seq of char;
+    
+end Global

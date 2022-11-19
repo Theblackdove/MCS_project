@@ -1,0 +1,25 @@
+class World
+
+instance variables  
+
+  public static env : [Environment] := nil;
+  public static timerRef : Timer := Timer`GetInstance();
+
+operations
+
+  public World : () ==> World
+  World() ==
+    (
+      env := new Environment("scenario.txt");
+      System`policeCentral.addPatrole(System`patrole1);
+      System`policeCentral.addPatrole(System`patrole2);
+      System`policeCentral.addPatrole(System`patrole3);
+      System`policeCentral.addPatrole(System`patrole4);
+    );
+
+ 
+  public Run : () ==> ()
+  Run() ==
+    env.Run();
+    
+end World

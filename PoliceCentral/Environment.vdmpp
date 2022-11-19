@@ -1,0 +1,86 @@
+class Environment is subclass of Global
+
+types
+
+public inline = ID * TaskType * nat * nat * Time * Time;
+protected outline = ID * [PatroleType] * [Coordinates] * TaskType * Coordinates * [real] * Time;
+
+instance variables 
+
+io : IO := new IO();
+inlines  : seq of inline  := [];
+outlines : seq of outline := [];
+
+taskId : [ID] := nil;
+busy : bool := true;
+  
+operations
+
+    public Environment : String ==> Environment
+    Environment(fname) == 
+    def 
+        mk_(-,input) = io.freadval[seq of inline](fname)
+    in
+        inlines := input;
+
+    public Run : () ==> ()
+    Run() ==
+        (while not isFinished() and System`policeCentral.isFinished()
+        do 
+        (
+            taskId := createSignal();
+            System`policeCentral.Step();
+            World`timerRef.StepTime();
+        );  
+        showResult()
+        );
+
+    private createSignal: () ==> [ID]
+    createSignal() ==
+        (
+            if len inlines > 0
+            then
+            (
+                dcl curTime : Time := World`timerRef.GetTime(),
+                    done : bool := false;
+                while not done do 
+                    let
+                        mk_(tId, ptaskType, x, y, pTime, pTaskDuration) = hd inlines
+                    in
+                        if pTime <= curTime
+                        then
+                        (
+                            dcl pCoord : Coordinates := mk_Coordinates(x,y);
+                            System`policeCentral.addTask(tId, pCoord, ptaskType, pTime, pTaskDuration);   
+                            inlines := tl inlines;
+                            done := len inlines = 0;
+                            return tId;
+                        )
+                        else
+                        (
+                            done := true;
+                            return nil
+                        )
+            )
+            else
+            (
+                busy := false;
+                return nil
+            )    
+        );
+
+    public handleTask: ID * [PatroleType] * [Coordinates] * TaskType * Coordinates * [real] * Time ==> ()
+    handleTask (newTaskid, pPatroleType, pCoordPat, pTaskType, pCoordTask, pDist, pTime) ==
+        (
+            outlines := outlines ^ [mk_(newTaskid, pPatroleType, pCoordPat, pTaskType, pCoordTask, pDist, pTime)]
+        );
+    
+    public showResult : () ==> ()
+    showResult() ==
+        def - = io.writeval[seq of outline](outlines) in skip;
+
+    public isFinished : () ==> bool 
+    isFinished() == 
+        return inlines = [] and not busy;
+    
+end Environment
