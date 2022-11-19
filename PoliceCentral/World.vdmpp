@@ -12,9 +12,9 @@ operations
     (
       env := new Environment("scenario.txt");
       System`policeCentral.addPatrole(System`patrole1);
-      System`policeCentral.addPatrole(System`patrole2);
-      System`policeCentral.addPatrole(System`patrole3);
-      System`policeCentral.addPatrole(System`patrole4);
+      --System`policeCentral.addPatrole(System`patrole2);
+      --System`policeCentral.addPatrole(System`patrole3);
+      --System`policeCentral.addPatrole(System`patrole4);
     );
 
  
