@@ -51,40 +51,6 @@ operations
             );
             busy := false
         );
-/*         (
-            dcl newtime : Time := World`timerRef.GetTime();
-        
-            if 
-                newtime = TimeOnTask
-            then
-            (
-                -- Update patrole location
-                vacant := true;
-                busy := false
-            );
-        ); */
-    /* (
-        curTime := World`timerRef.GetTime();  
-        --dcl  t : Time := World`timerRef.GetTime();  
-        if 
-            curTask <> nil
-        then
-        (
-            -- Update patrole location
-            sendPatrole(curTask);
-            set_location(curTask.coord);
-            set_currentPriority(taskPriority(curTask.t_type));
-            busy := false;
-            curTask := nil;  -- This should be handled differently
-        ); 
-        --if 
-        --    curTime = TaskDoneTime
-        --then
-        --(  
-        --    busy := false;
-        --    curTask := nil; 
-        --);
-    ); */
 
     public addTask: ID * Coordinates * TaskType * real * Time * Time ==> ()
     addTask(pId, pTaskCoord, pTaskType, pDist, pTime, pDuration) ==
@@ -180,3 +146,38 @@ end Patrole
         World`env.handleTask(ptaskId, pPatroleType, t_type, pCoordTask, pDist, pTime); */
         --is not yet specified;
         --outline = ID * PatroleType * TaskType * Coordinates * real * Time; 
+
+/*         (
+            dcl newtime : Time := World`timerRef.GetTime();
+        
+            if 
+                newtime = TimeOnTask
+            then
+            (
+                -- Update patrole location
+                vacant := true;
+                busy := false
+            );
+        ); */
+    /* (
+        curTime := World`timerRef.GetTime();  
+        --dcl  t : Time := World`timerRef.GetTime();  
+        if 
+            curTask <> nil
+        then
+        (
+            -- Update patrole location
+            sendPatrole(curTask);
+            set_location(curTask.coord);
+            set_currentPriority(taskPriority(curTask.t_type));
+            busy := false;
+            curTask := nil;  -- This should be handled differently
+        ); 
+        --if 
+        --    curTime = TaskDoneTime
+        --then
+        --(  
+        --    busy := false;
+        --    curTask := nil; 
+        --);
+    ); */
