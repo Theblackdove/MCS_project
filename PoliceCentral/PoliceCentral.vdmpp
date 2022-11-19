@@ -68,7 +68,7 @@ operations
                         )
                         else if
                             patroles(id).get_vacancy() = false and 
-                            taskPriority(pTaskType) > patroles(id).get_currentPriority()
+                            taskPriority(pTaskType) >= patroles(id).get_currentPriority()
                         then
                         (
                             patroles(id).addTask(taskId, pTaskCoord, pTaskType, dist, pTime, pTaskDuration);        
@@ -91,8 +91,7 @@ operations
 
     public distances: (map nat to Patrole) * Coordinates ==> seq of ID
     distances(mPatroles, pTaskCoord) ==
-        (
-            
+        (   
             --dcl temp : seq of real := [],
             dcl temp : seq of real := [distToTask(mPatroles(i).get_location(),pTaskCoord) | i in set dom mPatroles],
                 res  : seq of ID := [];
@@ -111,7 +110,8 @@ operations
                 )
             );
             return res   
-        );
+        )
+        post RESULT in set dom patroles;
 
 
    public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
@@ -136,7 +136,7 @@ operations
             let setOfPatroles = {x | x in set rng mPatroles & patrolePriority(x.get_patroleType()) >= taskPriority(pTaskType)
                         and taskPriority(pTaskType) >= x.get_currentPriority()}-- and x.get_vacancy() = true}
             in
-            (  
+            (   
                 if setOfPatroles = {} then return nil    -- Meaning no available patrole
                 else return closestPatrole(setOfPatroles, pTaskCoord)
             )
