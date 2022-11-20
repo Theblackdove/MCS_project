@@ -56,7 +56,8 @@ operations
                         dcl id : ID := hd dists,
                             dist : real := distToTask(patroleLocations(id), pTaskCoord);
                         if
-                            patroles(id).get_vacancy() = true and 
+                            --patroles(id).get_vacancy() = true and 
+                            patroles(id).get_currentPriority() = 0 and
                             patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
                         then
                         (   
@@ -65,11 +66,12 @@ operations
                             patroleLocations := patroleLocations ++ {id |-> pTaskCoord}; -- Maybe move to Patrole classes instead????
                             dists := [];
                             flag := true
-                        )
-                        else if
-                            patroles(id).get_vacancy() = false and 
+                        );
+                        if
+                            patroles(id).get_currentPriority() <> 0 and 
+                            taskPriority(pTaskType) > patroles(id).get_currentPriority()
                             --taskPriority(pTaskType) >= patroles(id).get_currentPriority() and
-                            patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
+                            --patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
                         then
                         (
                             patroles(id).addTask(taskId, pTaskCoord, pTaskType, dist, pTime, pTaskDuration);        
@@ -78,8 +80,8 @@ operations
                             dists := [];
                             flag := true
                         )
-                        else
-                            dists := tl dists; 
+                        --else
+                        --    dists := tl dists; 
                     );
                     if flag = false
                     then World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);     

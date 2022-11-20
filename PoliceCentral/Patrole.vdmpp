@@ -47,6 +47,7 @@ operations
                 curTask := nil;
                 TaskDoneTime := 0;
                 distToTask := 0;
+                currentPriority := 0;
                 vacant := true;
             );
             busy := false
