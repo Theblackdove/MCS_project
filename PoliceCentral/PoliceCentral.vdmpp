@@ -68,7 +68,8 @@ operations
                         )
                         else if
                             patroles(id).get_vacancy() = false and 
-                            taskPriority(pTaskType) >= patroles(id).get_currentPriority()
+                            --taskPriority(pTaskType) >= patroles(id).get_currentPriority() and
+                            patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
                         then
                         (
                             patroles(id).addTask(taskId, pTaskCoord, pTaskType, dist, pTime, pTaskDuration);        
@@ -111,7 +112,7 @@ operations
             );
             return res   
         )
-        post RESULT in set dom patroles;
+        post forall res in set elems RESULT & res in set dom patroles;
 
 
    public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
