@@ -136,7 +136,7 @@ operations
         post forall res in set elems RESULT & res in set dom patroles;
     
     -- Operation that returns the set of patroles that match given taskType
-    /* private findRightPatrole: (map nat to Patrole) * TaskType * Coordinates ==> [ID] --set of Patrole --()--set of (map nat to Patrole)
+    private findRightPatrole: (map nat to Patrole) * TaskType * Coordinates ==> [ID] --set of Patrole --()--set of (map nat to Patrole)
     findRightPatrole(mPatroles, pTaskType, pTaskCoord) ==
         (
             let setOfPatroles = {x | x in set rng mPatroles & patrolePriority(x.get_patroleType()) >= taskPriority(pTaskType)
@@ -147,33 +147,10 @@ operations
                 else return closestPatrole(setOfPatroles, pTaskCoord)
             )
         )
-        pre mPatroles <> {|->} and pTaskType in set dom taskPriority; */
-    
-     -- Operation that finds the closest patrole wrt. a given task.
-    private closestPatrole: set of Patrole * TaskType * Coordinates ==> [ID] --Patrole
-    closestPatrole(sPatroles, pTaskType, pTaskCoord) ==
-        (   
-            dcl temp : set of Patrole := sPatroles;
-            while temp <> {} do
-            (
-                let
-                    p1 in set temp be st forall p2 in set temp
-                    & distToTask(p1.get_location(), pTaskCoord) <= distToTask(p2.get_location(), pTaskCoord)
-                in
-                    if 
-                        taskPriority(pTaskType) > p1.get_currentPriority() and patrolePriority(p1.get_patroleType()) >= taskPriority(pTaskType)
-                    then
-                        return (p1.get_patroleId())
-                    else 
-                        temp := temp \ {p1}
-            );
-            return nil
-        )
-        pre sPatroles <> {}
-        post RESULT in set dom patroles; -- Possibly redundant?? 
+        pre mPatroles <> {|->} and pTaskType in set dom taskPriority;
      
      -- Operation that finds the closest patrole wrt. a given task.
-    /* private closestPatrole: set of Patrole * Coordinates ==> ID --Patrole
+    private closestPatrole: set of Patrole * Coordinates ==> ID --Patrole
     closestPatrole(sPatrole, pTaskCoord) ==
         (   
             let
@@ -183,7 +160,7 @@ operations
                 return (p1.get_patroleId())
         )
     pre sPatrole <> {}
-    post RESULT in set dom patroles; -- Possibly redundant?? */
+    post RESULT in set dom patroles; -- Possibly redundant??
 
     -- Operation that returns the distance between a patrole and a task
     private distToTask: Coordinates * Coordinates ==> real
