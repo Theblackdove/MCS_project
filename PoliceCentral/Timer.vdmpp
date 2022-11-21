@@ -1,11 +1,11 @@
 class Timer 
 
 instance variables
-currentTime : nat := 0;
-private static timerInstance : Timer := new Timer();
+    currentTime : nat := 0;
+    private static timerInstance : Timer := new Timer();
 
 values 
-stepLength : nat = 100;
+    stepLength : nat = 100;
 
 operations
 

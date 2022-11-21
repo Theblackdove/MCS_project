@@ -13,7 +13,6 @@ instance variables
     curTask          : [Task] := nil;
     
     TaskDoneTime     : Time := 0;
-    --vacant           : bool := true;   
     busy             : bool := false;
 
 operations
@@ -36,7 +35,6 @@ operations
             (
                 sendPatrole(curTask);
                 set_location(curTask.coord);
-
             );
             if 
                 newtime = TaskDoneTime
@@ -49,6 +47,7 @@ operations
             );
             busy := false
         );
+
 
     public addTask: ID * Coordinates * TaskType * real * Time * Time ==> ()
     addTask(pId, pTaskCoord, pTaskType, pDist, pTime, pDuration) ==
@@ -102,81 +101,5 @@ operations
     public setDistToTask: real ==> ()
     setDistToTask(pdist) ==
         distToTask := pdist;
-    
-    /* public set_vacancy: bool ==> ()
-    set_vacancy(pVacant) == 
-        vacant := pVacant;
-
-    pure public get_vacancy: () ==> bool
-    get_vacancy() == 
-        return vacant; */
 
 end Patrole
-
-/*     public addTask: ID * Coordinates * TaskType * Time ==> ()
-    addTask(pId, pCoord, pTaskType, pTime) == 
-        if 
-            taskPriority(pTaskType) >= currentPriority and patrolePriority(p_type) = pTaskType
-        then
-            (   
-                dcl newtime : Time := World`timerRef.GetTime();
-                taskId := pId;
-                t_type := pTaskType;
-                set_currentPriority(taskPriority(pTaskType));
-                set_taskLocation(pCoord);
-                sendPatrole(pId, p_type, taskLocation, pTime, newtime)
-                --set_vacancy(false)
-            )
-    pre pTaskType in set dom taskPriority; */
-
-
-
-/*      public set_taskLocation: Coordinates ==> ()
-    set_taskLocation(pLoc) == 
-        taskLocation := pLoc; 
-
-    pure public get_taskLocation: () ==> Coordinates
-    get_taskLocation() == 
-        return taskLocation; */
-
-    /* private sendPatrole: ID * PatroleType * Coordinates * real * Time ==> ()
-    sendPatrole(ptaskId, pPatroleType, pCoordTask, pDist, pTime) ==
-        World`env.handleTask(ptaskId, pPatroleType, t_type, pCoordTask, pDist, pTime); */
-        --is not yet specified;
-        --outline = ID * PatroleType * TaskType * Coordinates * real * Time; 
-
-/*         (
-            dcl newtime : Time := World`timerRef.GetTime();
-        
-            if 
-                newtime = TimeOnTask
-            then
-            (
-                -- Update patrole location
-                vacant := true;
-                busy := false
-            );
-        ); */
-    /* (
-        curTime := World`timerRef.GetTime();  
-        --dcl  t : Time := World`timerRef.GetTime();  
-        if 
-            curTask <> nil
-        then
-        (
-            -- Update patrole location
-            sendPatrole(curTask);
-            set_location(curTask.coord);
-            set_currentPriority(taskPriority(curTask.t_type));
-            busy := false;
-            curTask := nil;  -- This should be handled differently
-        ); 
-        --if 
-        --    curTime = TaskDoneTime
-        --then
-        --(  
-        --    busy := false;
-        --    curTask := nil; 
-        --);
-    ); */
-

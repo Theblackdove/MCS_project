@@ -2,17 +2,17 @@ class Environment is subclass of Global
 
 types
 
-public inline = ID * TaskType * nat * nat * Time * Time;
-protected outline = ID * [PatroleType] * [Coordinates] * TaskType * Coordinates * [real] * Time;
+    public inline = ID * TaskType * nat * nat * Time * Time;
+    protected outline = ID * [PatroleType] * [Coordinates] * TaskType * Coordinates * [real] * Time;
 
 instance variables 
 
-public io : IO := new IO();
-inlines  : seq of inline  := [];
-outlines : seq of outline := [];
+    public io : IO := new IO();
+    inlines  : seq of inline  := [];
+    outlines : seq of outline := [];
 
-taskId : [ID] := nil;
-busy : bool := true;
+    taskId : [ID] := nil;
+    busy : bool := true;
   
 operations
 
