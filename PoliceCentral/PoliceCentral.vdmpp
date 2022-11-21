@@ -30,6 +30,7 @@ operations
                 patroles := patroles munion {pId |-> pPatrole};  
             )
         );
+        
     -- Operation that add a multiple new patroles. Used by class World
     public addMultiplePatroles: set of Patrole ==> ()
     addMultiplePatroles(sPatrole) ==
