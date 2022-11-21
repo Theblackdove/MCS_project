@@ -9,11 +9,11 @@ instance variables
     p_type           : PatroleType;
     location         : Coordinates;
     currentPriority  : Priority := 0;
-    distToTask       : [real] := 0;
+    distToTask       : [real] := nil;
     curTask          : [Task] := nil;
     
     TaskDoneTime     : Time := 0;
-    vacant           : bool := true;   
+    --vacant           : bool := true;   
     busy             : bool := false;
 
 operations
@@ -30,25 +30,22 @@ operations
     Step() ==
         (
             dcl newtime : Time := World`timerRef.GetTime();
-            if 
-                --curTask <> nil 
+            if
                 busy = true 
             then
             (
                 sendPatrole(curTask);
                 set_location(curTask.coord);
-                set_currentPriority(taskPriority(curTask.t_type));
-                --curTask := nil;
+
             );
             if 
                 newtime = TaskDoneTime
             then
             (
                 curTask := nil;
+                distToTask := nil;
                 TaskDoneTime := 0;
-                distToTask := 0;
                 currentPriority := 0;
-                vacant := true;
             );
             busy := false
         );
@@ -58,14 +55,14 @@ operations
     (
         curTask := mk_Task(pId, pTaskCoord, pTaskType, pTime, pDuration);
         distToTask := pDist;
-        TaskDoneTime := curTask.t + pDuration;
-        vacant := false;
+        TaskDoneTime := pTime + pDuration;
+        set_currentPriority(taskPriority(pTaskType));
         busy := true;
     );
 
     private sendPatrole: Task ==> ()
     sendPatrole(pTask) == 
-        World`env.handleTask(pTask.id, p_type, location, pTask.t_type, pTask.coord, distToTask, pTask.t);
+        World`env.handleTask(pTask.id, p_type, location, pTask.type, pTask.coord, distToTask, pTask.time);
 
     public isFinished: () ==> bool
     isFinished () == 
@@ -106,13 +103,13 @@ operations
     setDistToTask(pdist) ==
         distToTask := pdist;
     
-    public set_vacancy: bool ==> ()
+    /* public set_vacancy: bool ==> ()
     set_vacancy(pVacant) == 
         vacant := pVacant;
 
     pure public get_vacancy: () ==> bool
     get_vacancy() == 
-        return vacant;
+        return vacant; */
 
 end Patrole
 

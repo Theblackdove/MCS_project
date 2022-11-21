@@ -16,7 +16,7 @@ values
         <PatroleB> |-> 2, 
         <PatroleC> |-> 3,
         <PatroleD> |-> 4
-    };
+    }
 
 types
 
@@ -30,13 +30,14 @@ types
     
     public Coordinates :: 
         x : nat 
-        y : nat;
+        y : nat
+    inv coord == coord.x < 50 and coord.y < 50;
 
     public Task ::
         id       : ID
         coord    : Coordinates
-        t_type   : TaskType
-        t        : Time
+        type     : TaskType
+        time     : Time
         duration : Time;
 
     public PatroleType = <PatroleA> | <PatroleB> | <PatroleC> | <PatroleD> | <None>;

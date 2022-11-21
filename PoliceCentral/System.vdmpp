@@ -11,11 +11,11 @@ instance variables
     public static policeCentral: PoliceCentral := new PoliceCentral();
 
     public static patrole1: Patrole := new Patrole(1, <PatroleA>, mk_Coordinates(1,1));
-    --public static patrole2: Patrole := new Patrole(2, <PatroleD>, mk_Coordinates(5,5));
+    public static patrole2: Patrole := new Patrole(2, <PatroleB>, mk_Coordinates(5,5));
     --public static patrole3: Patrole := new Patrole(3, <PatroleC>, mk_Coordinates(3,3));
     --public static patrole4: Patrole := new Patrole(4, <PatroleD>, mk_Coordinates(4,4));
 
-    --public static patroleDB : set of Patrole := {patrole1, patrole2};
+    public static patroleDB : set of Patrole := {patrole1, patrole2};
 
     --public static task1: Task := new Task(1, 20, 20, 100);
     --public static task2: Task := new Task(2, 50, 50, 200);

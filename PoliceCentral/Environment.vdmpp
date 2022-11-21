@@ -7,7 +7,7 @@ protected outline = ID * [PatroleType] * [Coordinates] * TaskType * Coordinates 
 
 instance variables 
 
-io : IO := new IO();
+public io : IO := new IO();
 inlines  : seq of inline  := [];
 outlines : seq of outline := [];
 

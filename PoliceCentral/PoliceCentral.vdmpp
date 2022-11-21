@@ -15,8 +15,9 @@ instance variables
     -- Status of the instantiated class
     busy : bool := false;
 
+    --activePatroles: set of Patrole := {}; 
+    
     dists : seq of ID := [];
-    tempId : ID := 0;
 
 functions
 
@@ -26,14 +27,30 @@ operations
     public addPatrole: Patrole ==> ()
     addPatrole(pPatrole) ==
         (   
-            --dcl pId : nat := card dom patroles + 1;
+            dcl pId : nat := card dom patroles + 1;
             atomic
             (
-                --patroleLocations := patroleLocations munion {pId |-> pPatrole.get_location()};
-                patroleLocations := patroleLocations munion {pPatrole.get_patroleId() |-> pPatrole.get_location()};
-                --patroles := patroles munion {pId |-> pPatrole};  
-                patroles := patroles munion {pPatrole.get_patroleId() |-> pPatrole};  
+                patroleLocations := patroleLocations munion {pId |-> pPatrole.get_location()};
+                --patroleLocations := patroleLocations munion {pPatrole.get_patroleId() |-> pPatrole.get_location()};
+                patroles := patroles munion {pId |-> pPatrole};  
+                --patroles := patroles munion {pPatrole.get_patroleId() |-> pPatrole};  
             )
+        );
+
+    public addMultiplePatroles: set of Patrole ==> ()
+    addMultiplePatroles(sPatrole) ==
+        (   
+            for all p in set sPatrole do
+            (    
+                dcl pId : nat := card dom patroles + 1;
+                atomic
+                (
+                    patroleLocations := patroleLocations munion {pId |-> p.get_location()};
+                    --patroleLocations := patroleLocations munion {pPatrole.get_patroleId() |-> pPatrole.get_location()};
+                    patroles := patroles munion {pId |-> p};  
+                    --patroles := patroles munion {pPatrole.get_patroleId() |-> pPatrole};  
+                )
+            );
         );
 
     public Step: () ==> ()
@@ -50,13 +67,14 @@ operations
                 in
                 (
                     dcl flag : bool := false;
+                    -- Get seq of distances from task location to all patroles (increasing order)
                     dists := distances(patroles, pTaskCoord);
                     while dists <> [] do
                     (
                         dcl id : ID := hd dists,
+                            -- Local variable used by patrole.addTask()
                             dist : real := distToTask(patroleLocations(id), pTaskCoord);
                         if
-                            --patroles(id).get_vacancy() = true and 
                             patroles(id).get_currentPriority() = 0 and
                             patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
                         then
@@ -66,32 +84,33 @@ operations
                             patroleLocations := patroleLocations ++ {id |-> pTaskCoord}; -- Maybe move to Patrole classes instead????
                             dists := [];
                             flag := true
-                        );
-                        if
-                            patroles(id).get_currentPriority() <> 0 and 
-                            taskPriority(pTaskType) > patroles(id).get_currentPriority()
-                            --taskPriority(pTaskType) >= patroles(id).get_currentPriority() and
-                            --patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
+                        )
+                        else if
+                            taskPriority(pTaskType) > patroles(id).get_currentPriority() and
+                            patrolePriority(patroles(id).get_patroleType()) >= taskPriority(pTaskType)
                         then
                         (
                             patroles(id).addTask(taskId, pTaskCoord, pTaskType, dist, pTime, pTaskDuration);        
                             -- Set new location for patrole (overriding)
-                            patroleLocations := patroleLocations ++ {id |-> pTaskCoord}; -- Maybe move to Patrole classes instead????
+                            patroleLocations := patroleLocations ++ {id |-> pTaskCoord};
                             dists := [];
                             flag := true
                         )
-                        --else
-                        --    dists := tl dists; 
+                        else
+                            dists := tl dists; 
                     );
                     if flag = false
-                    then World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);     
+                    then 
+                    (   World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);
+                        --World`env.io.print("No vacant Patroles\n")
+                    );     
                 );         
             busy := len tasks > 0;
             
             for all id in set dom patroles do 
                 patroles(id).Step()
         );
-
+    
     public distances: (map nat to Patrole) * Coordinates ==> seq of ID
     distances(mPatroles, pTaskCoord) ==
         (   
@@ -115,25 +134,9 @@ operations
             return res   
         )
         post forall res in set elems RESULT & res in set dom patroles;
-
-
-   public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
-   addTask (pId, pCoord, pTaskType, pTime, pTaskDuration) == 
-        (
-            tasks := tasks ^ [mk_(pId, pCoord, pTaskType, pTime, pTaskDuration)];
-            busy := true
-        );
-    
-    private getTask: () ==> ID * Coordinates * TaskType * Time * Time
-    getTask() ==
-        (
-            dcl res : ID * Coordinates * TaskType * Time * Time := hd tasks;
-            tasks := tl tasks;
-            return res
-        );
     
     -- Operation that returns the set of patroles that match given taskType
-    private findRightPatrole: (map nat to Patrole) * TaskType * Coordinates ==> [ID] --set of Patrole --()--set of (map nat to Patrole)
+    /* private findRightPatrole: (map nat to Patrole) * TaskType * Coordinates ==> [ID] --set of Patrole --()--set of (map nat to Patrole)
     findRightPatrole(mPatroles, pTaskType, pTaskCoord) ==
         (
             let setOfPatroles = {x | x in set rng mPatroles & patrolePriority(x.get_patroleType()) >= taskPriority(pTaskType)
@@ -144,10 +147,33 @@ operations
                 else return closestPatrole(setOfPatroles, pTaskCoord)
             )
         )
-        pre mPatroles <> {|->} and pTaskType in set dom taskPriority;
+        pre mPatroles <> {|->} and pTaskType in set dom taskPriority; */
     
      -- Operation that finds the closest patrole wrt. a given task.
-    private closestPatrole: set of Patrole * Coordinates ==> ID --Patrole
+    private closestPatrole: set of Patrole * TaskType * Coordinates ==> [ID] --Patrole
+    closestPatrole(sPatroles, pTaskType, pTaskCoord) ==
+        (   
+            dcl temp : set of Patrole := sPatroles;
+            while temp <> {} do
+            (
+                let
+                    p1 in set temp be st forall p2 in set temp
+                    & distToTask(p1.get_location(), pTaskCoord) <= distToTask(p2.get_location(), pTaskCoord)
+                in
+                    if 
+                        taskPriority(pTaskType) > p1.get_currentPriority() and patrolePriority(p1.get_patroleType()) >= taskPriority(pTaskType)
+                    then
+                        return (p1.get_patroleId())
+                    else 
+                        temp := temp \ {p1}
+            );
+            return nil
+        )
+        pre sPatroles <> {}
+        post RESULT in set dom patroles; -- Possibly redundant?? 
+     
+     -- Operation that finds the closest patrole wrt. a given task.
+    /* private closestPatrole: set of Patrole * Coordinates ==> ID --Patrole
     closestPatrole(sPatrole, pTaskCoord) ==
         (   
             let
@@ -156,8 +182,8 @@ operations
             in
                 return (p1.get_patroleId())
         )
-        pre sPatrole <> {}
-        post RESULT in set dom patroles; -- Possibly redundant??
+    pre sPatrole <> {}
+    post RESULT in set dom patroles; -- Possibly redundant?? */
 
     -- Operation that returns the distance between a patrole and a task
     private distToTask: Coordinates * Coordinates ==> real
@@ -190,6 +216,21 @@ operations
             )
         )
     pre r >= 0;
+
+    public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
+    addTask (pId, pCoord, pTaskType, pTime, pTaskDuration) == 
+        (
+            tasks := tasks ^ [mk_(pId, pCoord, pTaskType, pTime, pTaskDuration)];
+            busy := true
+        );
+    
+    private getTask: () ==> ID * Coordinates * TaskType * Time * Time
+    getTask() ==
+        (
+            dcl res : ID * Coordinates * TaskType * Time * Time := hd tasks;
+            tasks := tl tasks;
+            return res
+        );
 
     public isFinished: () ==> bool
     isFinished () ==
