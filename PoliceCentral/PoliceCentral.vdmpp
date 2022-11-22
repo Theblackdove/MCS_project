@@ -11,8 +11,6 @@ instance variables
     
     -- Store the tasks arriving from the environment
     tasks : seq of (ID * Coordinates * TaskType * Time * Time) := [];
-
-    curTask : [Task] := nil; 
     
     -- Status of the instantiated class
     busy : bool := false;
@@ -185,8 +183,4 @@ operations
         return forall id in set dom patroles &
             patroles(id).isFinished();
 
-
-    private printStatus: Task * Patrole ==> ()
-    printStatus(pTask, pPatrole) ==
-        is not yet specified
 end PoliceCentral
