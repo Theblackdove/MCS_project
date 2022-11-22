@@ -4,15 +4,16 @@ values
 
 instance variables
     
-    -- links to Patroles
+    -- links to Patroles and locations
     patroleLocations : map nat to Coordinates := {|->};
     patroles         : map nat to Patrole := {|->};
     inv dom patroleLocations = dom patroles;
     
     -- Store the tasks arriving from the environment
-    tasks : seq of (ID * Coordinates * TaskType * Time * Time) := [];
+    tasks : seq of Task := [];
+    --tasks : seq of (ID * Coordinates * TaskType * Time * Time) := [];
 
-    curTask : [Task] := nil; 
+    --curTask : [Task] := nil; 
     
     -- Status of the instantiated class
     busy : bool := false;
@@ -56,9 +57,10 @@ operations
             then
                 let
                     -- Load in task
-                    mk_(taskId, pTaskCoord, pTaskType, pTime, pTaskDuration) = getTask(),
+                    --mk_(taskId, pTaskCoord, pTaskType, pTime, pTaskDuration) = getTask(),
+                    curTask = getTask(),
                     -- Finds the id of the closest patrole in PatroleDB. 
-                    id = closestPatrole(patroleLocations, pTaskType, pTaskCoord)  
+                    id = closestPatrole(patroleLocations, curTask.t_type, curTask.t_loc)  
                 in
                 (
                     if
@@ -66,14 +68,16 @@ operations
                     then
                     (   
                         -- Calculate distance from patrole to task 
-                        dcl dist : real := distToTask(patroles(id).get_location(), pTaskCoord);
+                        dcl dist : real := distToTask(patroles(id).get_location(), curTask.t_loc);
                         -- Add task to given patrole
-                        patroles(id).addTask(taskId, pTaskCoord, pTaskType, dist, pTime, pTaskDuration);
+                        patroles(id).addTask(curTask, dist);
                     )
                     else
                     (   
                         -- No Available patroles found 
-                        World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);
+                        --World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);
+                        --public handleTask: [Task * PatroleType * Coordinates * real] ==> ()
+                        World`env.handleTask(curTask, nil, nil, nil);
                         World`env.io.print("No vacant Patroles\n")    
                     )  
                 );         
@@ -165,20 +169,34 @@ operations
         )
     pre r >= 0;
 
-    public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
+    /* public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
     addTask (pId, pCoord, pTaskType, pTime, pTaskDuration) == 
         (
             tasks := tasks ^ [mk_(pId, pCoord, pTaskType, pTime, pTaskDuration)];
             busy := true
         );
+ */
+    public addtask: ID * Coordinates * TaskType * Time * Time ==> ()
+    addtask(pId, pCoord, pTaskType, pTime, pTaskDuration) ==
+        (
+            tasks := tasks ^ [mk_Task(pId, pCoord, pTaskType, pTime, pTaskDuration)];
+            busy := true
+        );
     
-    private getTask: () ==> ID * Coordinates * TaskType * Time * Time
+    private getTask: () ==> Task
+    getTask() ==
+        (
+            dcl res : Task := hd tasks;
+            tasks := tl tasks;
+            return res
+        );
+    /* private getTask: () ==> ID * Coordinates * TaskType * Time * Time
     getTask() ==
         (
             dcl res : ID * Coordinates * TaskType * Time * Time := hd tasks;
             tasks := tl tasks;
             return res
-        );
+        ); */
 
     public isFinished: () ==> bool
     isFinished () ==

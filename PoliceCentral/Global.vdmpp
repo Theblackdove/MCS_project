@@ -34,9 +34,9 @@ types
     inv coord == coord.x < 50 and coord.y < 50;
 
     public Task ::
-        t_id         : ID
-        coord      : Coordinates
-        type       : TaskType
+        t_id       : ID
+        t_loc      : Coordinates
+        t_type     : TaskType
         t_time     : Time
         t_duration : Time;
 

@@ -51,7 +51,7 @@ operations
                         then
                         (
                             dcl pCoord : Coordinates := mk_Coordinates(x,y);
-                            System`policeCentral.addTask(tId, pCoord, ptaskType, pTime, pTaskDuration);   
+                            System`policeCentral.addtask(tId, pCoord, ptaskType, pTime, pTaskDuration);   -- CHange to TASK type
                             inlines := tl inlines;
                             done := len inlines = 0;
                             return tId;
@@ -69,10 +69,11 @@ operations
             )    
         );
 
-    public handleTask: ID * [PatroleType] * [Coordinates] * TaskType * Coordinates * [real] * Time ==> ()
-    handleTask (newTaskid, pPatroleType, pCoordPat, pTaskType, pCoordTask, pDist, pTime) ==
+    public handleTask: Task * [PatroleType] * [Coordinates] * [real] ==> ()
+    handleTask (pTask, p_type, p_loc, pDist) ==
         (
-            outlines := outlines ^ [mk_(newTaskid, pPatroleType, pCoordPat, pTaskType, pCoordTask, pDist, pTime)]
+            let mk_Task(t_id, t_loc, t_type, t_time, -) = pTask
+            in outlines := outlines ^ [mk_(t_id, p_type, p_loc, t_type, t_loc, pDist, t_time)]
         );
     
     public showResult : () ==> ()
