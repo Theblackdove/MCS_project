@@ -5,7 +5,7 @@ values
 types
 
 instance variables
-    patroleId        : ID;
+    --patroleId        : ID;
     p_type           : PatroleType;
     location         : Coordinates;
     currentPriority  : Priority := 0;
@@ -17,10 +17,10 @@ instance variables
 
 operations
     -- Class constructor
-    public Patrole:  ID * PatroleType * Coordinates ==> Patrole
-    Patrole(pId, pType, pCoord) ==
+    public Patrole: PatroleType * Coordinates ==> Patrole
+    Patrole(pType, pCoord) ==
     (
-        patroleId := pId;
+        --patroleId := pId;
         p_type := pType;
         location := pCoord;
     );
@@ -61,7 +61,7 @@ operations
 
     private sendPatrole: Task ==> ()
     sendPatrole(pTask) == 
-        World`env.handleTask(pTask.id, p_type, location, pTask.type, pTask.coord, distToTask, pTask.time);
+        World`env.handleTask(pTask.t_id, p_type, location, pTask.type, pTask.coord, distToTask, pTask.t_time);
 
     public isFinished: () ==> bool
     isFinished () == 
@@ -70,13 +70,13 @@ operations
 -----------------------------------------------------------------------------
 -- Class specific set/get operations 
 -----------------------------------------------------------------------------
-    public set_patroleId: ID ==> ()
+    /* public set_patroleId: ID ==> ()
     set_patroleId(pId) ==
         patroleId := pId;
 
     pure public get_patroleId: () ==> ID
     get_patroleId() ==
-        return patroleId; 
+        return patroleId;  */
     
     public set_location: Coordinates ==> ()
     set_location(pLoc) == 

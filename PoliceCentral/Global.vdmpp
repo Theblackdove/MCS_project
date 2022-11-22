@@ -34,11 +34,11 @@ types
     inv coord == coord.x < 50 and coord.y < 50;
 
     public Task ::
-        id       : ID
-        coord    : Coordinates
-        type     : TaskType
-        time     : Time
-        duration : Time;
+        t_id         : ID
+        coord      : Coordinates
+        type       : TaskType
+        t_time     : Time
+        t_duration : Time;
 
     public PatroleType = <PatroleA> | <PatroleB> | <PatroleC> | <PatroleD> | <None>;
 
