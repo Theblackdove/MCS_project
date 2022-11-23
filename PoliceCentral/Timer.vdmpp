@@ -1,7 +1,7 @@
 class Timer 
 
 instance variables
-    currentTime : nat := 0;
+    public currentTime : nat := 0;
     private static timerInstance : Timer := new Timer();
 
 values 

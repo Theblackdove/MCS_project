@@ -11,11 +11,11 @@ operations
   World() ==
     (
       env := new Environment("scenario.txt");
-      System`policeCentral.addMultiplePatroles(System`patroleDB)
-      --System`policeCentral.addPatrole(System`patrole1);
-      --System`policeCentral.addPatrole(System`patrole2);
-      --System`policeCentral.addPatrole(System`patrole3);
-      --System`policeCentral.addPatrole(System`patrole4);
+      --System`policeCentral.addMultiplePatroles(System`patroleDB)
+      System`policeCentral.addPatrole(System`patrole1);
+      System`policeCentral.addPatrole(System`patrole2);
+      System`policeCentral.addPatrole(System`patrole3);
+      System`policeCentral.addPatrole(System`patrole4);
     );
 
   public Run : () ==> ()

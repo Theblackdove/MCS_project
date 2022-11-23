@@ -11,12 +11,11 @@ instance variables
     
     -- Store the tasks arriving from the environment
     tasks : seq of Task := [];
-    --tasks : seq of (ID * Coordinates * TaskType * Time * Time) := [];
-
     --curTask : [Task] := nil; 
-    
     -- Status of the instantiated class
     busy : bool := false;
+
+    public io : IO := new IO();
 
 functions
 
@@ -57,12 +56,12 @@ operations
             then
                 let
                     -- Load in task
-                    --mk_(taskId, pTaskCoord, pTaskType, pTime, pTaskDuration) = getTask(),
                     curTask = getTask(),
                     -- Finds the id of the closest patrole in PatroleDB. 
-                    id = closestPatrole(patroleLocations, curTask.t_type, curTask.t_loc)  
+                    id = closestPatrole(patroleLocations, curTask.t_type, curTask.t_loc)
                 in
                 (
+                    printTask(curTask);
                     if
                         id <> nil
                     then
@@ -78,14 +77,15 @@ operations
                         --World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);
                         --public handleTask: [Task * PatroleType * Coordinates * real] ==> ()
                         World`env.handleTask(curTask, nil, nil, nil);
-                        World`env.io.print("No vacant Patroles\n")    
-                    )  
+                    );  
                 );         
             busy := len tasks > 0;
             
+            printPatroleStatus();
             for all id in set dom patroles do 
                 patroles(id).Step()
         );
+
     
     private closestPatrole: map nat to Coordinates * TaskType * Coordinates ==> [ID]
     closestPatrole(patroleLocs, pTaskType, pTaskCoord) ==
@@ -95,47 +95,22 @@ operations
             (
                 let
                     -- Finds the closest patrole in temporary patroleDB
-                    c1 in set ids be st forall c2 in set ids
-                    & distToTask(patroleLocs(c1), pTaskCoord) <= distToTask(patroleLocs(c2), pTaskCoord)
+                    id1 in set ids be st forall id2 in set ids
+                    & distToTask(patroleLocs(id1), pTaskCoord) <= distToTask(patroleLocs(id2), pTaskCoord)
                 in
                     if 
-                        taskPriority(pTaskType) > patroles(c1).get_currentPriority() and 
-                        patrolePriority(patroles(c1).get_patroleType()) >= taskPriority(pTaskType)
+                        taskPriority(pTaskType) > patroles(id1).get_currentPriority() and 
+                        patrolePriority(patroles(id1).get_patroleType()) >= taskPriority(pTaskType)
                     then
-                        return c1
+                        return id1
                     else
                         -- Remove the closest patrole from temporary patroleDB (not suitable for task) 
-                        ids := ids \ {c1}
+                        ids := ids \ {id1}
             );
             return nil
         )
     pre patroleLocs <> {|->}
     post RESULT in set dom patroles or RESULT = nil; -- Possibly redundant??  
-     -- Operation that finds the closest patrole wrt. a given task.
-    /* private closestPatrole: map nat to Patrole * TaskType * Coordinates ==> [ID]
-    closestPatrole(sPatroles, pTaskType, pTaskCoord) ==
-        (   
-            dcl temp : set of nat := dom sPatroles;
-            while temp <> {} do
-            (
-                let
-                    -- Finds the closest patrole in temporary patroleDB
-                    id1 in set temp be st forall id2 in set temp
-                    & distToTask(sPatroles(id1).get_location(), pTaskCoord) <= distToTask(sPatroles(id2).get_location(), pTaskCoord)
-                in
-                    if 
-                        taskPriority(pTaskType) > sPatroles(id1).get_currentPriority() and 
-                        patrolePriority(sPatroles(id1).get_patroleType()) >= taskPriority(pTaskType)
-                    then
-                        return id1
-                    else
-                        -- Remove the closest patrole from temporary patroleDB (not suitable for task) 
-                        temp := temp \ {id1}
-            );
-            return nil
-        )
-    pre sPatroles <> {|->}
-    post RESULT in set dom patroles or RESULT = nil; -- Possibly redundant??  */
      
     -- Operation that returns the distance between a patrole and a task
     private distToTask: Coordinates * Coordinates ==> real
@@ -169,15 +144,8 @@ operations
         )
     pre r >= 0;
 
-    /* public addTask:  ID * Coordinates * TaskType * Time * Time ==> ()
-    addTask (pId, pCoord, pTaskType, pTime, pTaskDuration) == 
-        (
-            tasks := tasks ^ [mk_(pId, pCoord, pTaskType, pTime, pTaskDuration)];
-            busy := true
-        );
- */
-    public addtask: ID * Coordinates * TaskType * Time * Time ==> ()
-    addtask(pId, pCoord, pTaskType, pTime, pTaskDuration) ==
+    public addTask: ID * Coordinates * TaskType * Time * Time ==> ()
+    addTask(pId, pCoord, pTaskType, pTime, pTaskDuration) ==
         (
             tasks := tasks ^ [mk_Task(pId, pCoord, pTaskType, pTime, pTaskDuration)];
             busy := true
@@ -190,21 +158,45 @@ operations
             tasks := tl tasks;
             return res
         );
-    /* private getTask: () ==> ID * Coordinates * TaskType * Time * Time
-    getTask() ==
-        (
-            dcl res : ID * Coordinates * TaskType * Time * Time := hd tasks;
-            tasks := tl tasks;
-            return res
-        ); */
 
     public isFinished: () ==> bool
     isFinished () ==
         return forall id in set dom patroles &
             patroles(id).isFinished();
 
+------------------------------------------------
+-- Operations for printing out result
+------------------------------------------------
+    printPatroleStatus: () ==> ()
+    printPatroleStatus() ==
+    (
+        io.print("STATUS\n");     
+        io.printf("Time  %s:\tPatroleType\tLoc\tPrio\tTask\tTask Done\n", [World`timerRef.GetTime()]);
+        io.print("------------------------------------------------------------------\n");
+        for all id in set dom patroles do
+        (
+            dcl task : [Task] := patroles(id).get_curTask();
+            io.printf("Patrole %s:\t", [id]);
+            io.printf("%s\t", [patroles(id).get_patroleType()]); 
+            io.printf("(%s,%s)   ", [patroles(id).get_location().x, patroles(id).get_location().y]);
+            io.printf("%s\t", [patroles(id).get_currentPriority()]); 
+            if task = nil
+            then 
+            (    
+                io.print(task);io.print("\t");io.print(task);io.print("\n")
+            )
+            else io.printf("%s\t%s\n", [task.t_type, task.t_duration+World`timerRef.GetTime()]);
+        );
+        io.print("------------------------------------------------------------------\n\n");
+    );
 
-    private printStatus: Task * Patrole ==> ()
-    printStatus(pTask, pPatrole) ==
-        is not yet specified
+    printTask: Task ==> ()
+    printTask(pTask) ==
+        ( 
+            io.print("#################################################\n");
+            io.printf("%s received at time: %s, location: (%s,%s)\n", [pTask.t_type, pTask.t_time, pTask.t_loc.x, pTask.t_loc.y]);
+            io.print("#################################################\n\n");
+        );
+
+
 end PoliceCentral

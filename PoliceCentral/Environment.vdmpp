@@ -51,7 +51,7 @@ operations
                         then
                         (
                             dcl pCoord : Coordinates := mk_Coordinates(x,y);
-                            System`policeCentral.addtask(tId, pCoord, ptaskType, pTime, pTaskDuration);   -- CHange to TASK type
+                            System`policeCentral.addTask(tId, pCoord, ptaskType, pTime, pTaskDuration);   -- CHange to TASK type
                             inlines := tl inlines;
                             done := len inlines = 0;
                             return tId;
