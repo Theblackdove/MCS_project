@@ -73,6 +73,7 @@ operations
                     )
                     else
                     (   
+                        io.print("!!!NO AVAILABLE PATROLE FOR TASK!!!\n\n");
                         -- No Available patroles found 
                         --World`env.handleTask(taskId, nil, nil, pTaskType, pTaskCoord, nil, pTime);
                         --public handleTask: [Task * PatroleType * Coordinates * real] ==> ()
@@ -178,7 +179,7 @@ operations
             dcl task : [Task] := patroles(id).get_curTask();
             io.printf("Patrole %s:\t", [id]);
             io.printf("%s\t", [patroles(id).get_patroleType()]); 
-            io.printf("(%s,%s)   ", [patroles(id).get_location().x, patroles(id).get_location().y]);
+            io.printf("(%s,%s)\t", [patroles(id).get_location().x, patroles(id).get_location().y]);
             io.printf("%s\t", [patroles(id).get_currentPriority()]); 
             if task = nil
             then 
@@ -197,6 +198,5 @@ operations
             io.printf("%s received at time: %s, location: (%s,%s)\n", [pTask.t_type, pTask.t_time, pTask.t_loc.x, pTask.t_loc.y]);
             io.print("#################################################\n\n");
         );
-
 
 end PoliceCentral

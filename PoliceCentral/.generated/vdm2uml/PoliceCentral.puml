@@ -1,0 +1,137 @@
+@startuml PoliceCentral
+
+hide empty members
+skinparam Shadowing false
+skinparam classAttributeIconSize 0
+skinparam ClassBorderThickness 0.5
+skinparam groupInheritance 5
+skinparam class {
+	BackgroundColor AntiqueWhite
+	ArrowColor Black
+	BorderColor Black
+}
+skinparam defaultTextAlignment center
+
+class System
+{
+}
+
+class World
+{
+	+World() : World
+	+Run()
+}
+
+class PoliceCentral
+{
+	-patroleLocations : map  to :: 
+	-tasks : seq of :: 
+	-busy : bool
+	+addPatrole(Patrole)
+	+addMultiplePatroles(set of Patrole)
+	+Step()
+	-closestPatrole(map  to ::, TaskType, ::) : [ID]
+	-distToTask(::, ::) : real
+	-sqrt(real, real) : real
+	+addTask(ID, ::, TaskType, Time, Time)
+	-getTask() : :: 
+	+isFinished() : bool
+	-printPatroleStatus()
+	-printTask(::)
+}
+
+class Global
+{
+	+taskPriority : map TaskType to Priority <<value>>
+	+patrolePriority : map PatroleType to  <<value>>
+	+Time : nat <<type>>
+	+ID : nat <<type>>
+	+Priority : nat <<type>>
+	+Coordinates : ::  <<type>>
+	+Task : ::  <<type>>
+	+PatroleType : <PatroleA> | <PatroleB> | <PatroleC> | <PatroleD> <<type>>
+	+TaskType : <TaskA> | <TaskB> | <TaskC> | <TaskD> <<type>>
+	+String : seq of char <<type>>
+}
+
+class Environment
+{
+	+inline : *...  <<type>>
+	#outline : *...  <<type>>
+	-inlines : seq of inline
+	-outlines : seq of outline
+	-taskId : [ID]
+	-busy : bool
+	+Environment(String) : Environment
+	+Run()
+	-createSignal() : [ID]
+	+handleTask(::, [PatroleType], [:: ], [real])
+	+showResult()
+	+isFinished() : bool
+}
+
+class Patrole
+{
+	-p_type : PatroleType
+	-p_loc : :: 
+	-currentPriority : Priority
+	-distToTask : [real]
+	-curTask : [:: ]
+	-TaskDoneTime : Time
+	-busy : bool
+	+Patrole(PatroleType, ::) : Patrole
+	+Step()
+	+addTask(::, real)
+	-sendPatrole(::)
+	+isFinished() : bool
+	+set_location(::)
+	+get_location() : :: 
+	+get_patroleType() : PatroleType
+	+set_currentPriority(Priority)
+	+get_currentPriority() : Priority
+	+get_curTask() : [:: ]
+	+setDistToTask(real)
+}
+
+class IO
+{
+	+filedirective : <append> | <start> <<type>>
+	+writeval(@p) : bool <<function>>
+	+fwriteval(seq1 of char, @p, filedirective) : bool <<function>>
+	+freadval(seq1 of char) : bool * [@p] <<function>>
+	+echo(seq of char) : bool
+	+fecho(seq of char, seq of char, [filedirective]) : bool
+	+ferror() : seq of char
+	+print(?)
+	+println(?)
+	+printf(seq of char, seq of ?)
+}
+
+class Timer
+{
+	+currentTime : nat
+	-stepLength : nat <<value>>
+	-Timer() : Timer
+	+GetInstance() : Timer
+	+StepTime()
+	+GetTime() : nat
+}
+
+System --> PoliceCentral : +policeCentral
+System --> Patrole : +patrole1
+System --> Patrole : +patrole2
+System --> Patrole : +patrole3
+System --> Patrole : +patrole4
+System --> "*" Patrole : +patroleDB
+Global <|-- System
+World --> Environment : +env
+World --> Timer : +timerRef
+PoliceCentral "[nat]" --> Patrole : -patroles
+PoliceCentral --> IO : +io
+Global <|-- PoliceCentral
+Environment --> IO : +io
+Global <|-- Environment
+Global <|-- Patrole
+Timer --> Timer : -timerInstance
+
+@enduml
