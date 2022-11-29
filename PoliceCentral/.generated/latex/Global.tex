@@ -1,4 +1,13 @@
-class GLOBAL
+\documentclass[a4paper]{article}
+\usepackage{longtable}
+\usepackage[color]{vdmlisting}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\begin{document}
+\title{}
+\author{}
+\begin{vdm_al}
+class Global
 
 values  
 
@@ -18,11 +27,11 @@ types
 
 public Time = nat;
     
-public ID = nat1;
---inv id == id > 0;
+public ID = nat
+inv id == id > 0;
     
-public Priority = nat;
---inv p == p >= 0;
+public Priority = nat
+inv p == p >= 0;
     
 public Coordinates :: 
     x : nat 
@@ -42,4 +51,6 @@ public TaskType = <TaskA> | <TaskB> | <TaskC> | <TaskD>;
     
 public String = seq of char;
     
-end GLOBAL
+end Global
+\end{vdm_al}
+\end{document}

@@ -1,12 +1,12 @@
 {
     "configurations": [
         {
-            "name": "Lens config: Launch World`Run",
+            "name": "Lens config: Launch SystemTest`Execute",
             "type": "vdm",
             "request": "launch",
             "noDebug": true,
-            "defaultName": "World",
-            "command": "p new World().Run()"
+            "defaultName": "SystemTest",
+            "command": "p new SystemTest().Execute()"
         }
     ]
 }

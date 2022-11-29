@@ -1,0 +1,44 @@
+class PoliceCentralTest is subclass of TestCase, GLOBAL
+
+values
+
+p1 : Patrole = new Patrole(<PatroleA>, mk_Coordinates(2,2));
+p2 : Patrole = new Patrole(<PatroleB>, mk_Coordinates(10,10));
+p3 : Patrole = new Patrole(<PatroleC>, mk_Coordinates(7,7));
+p4 : Patrole = new Patrole(<PatroleD>, mk_Coordinates(15,15));
+
+patroleDB : set of Patrole = {p1, p2, p3, p4};
+
+task1 : Task = mk_Task(1, mk_Coordinates(10, 10), <TaskA>, 100, 100);
+task2 : Task = mk_Task(2, mk_Coordinates(6, 6), <TaskB>, 200, 200);
+task3 : Task = mk_Task(3, mk_Coordinates(15, 15), <TaskD>, 400, 100);
+task4 : Task = mk_Task(4, mk_Coordinates(3, 3), <TaskC>, 600, 100);
+
+taskLoc : Coordinates = mk_Coordinates(4,4);
+patroleLoc : Coordinates = mk_Coordinates(1,1);
+
+
+operations
+
+protected runTest : () ==> ()
+runTest() ==
+(
+    calculateDistanceTest();
+);
+
+protected calculateDistanceTest : () ==> ()
+calculateDistanceTest() ==
+(
+    dcl policeCentral1 : PoliceCentral := new PoliceCentral();
+    assertTrue(policeCentral1.distToTask(patroleLoc, taskLoc) = 4.242642472890547)
+);
+
+protected closestPatroleTest : () ==> ()
+closestPatroleTest() ==
+(
+    dcl policeCentral2 : PoliceCentral := new PoliceCentral();
+    policeCentral2.addMultiplePatroles(patroleDB);
+    assertTrue(policeCentral2.closestPatrole(policeCentral2.patroleLocations, task1.t_type,task1.t_loc) = 1);
+);
+
+end PoliceCentralTest

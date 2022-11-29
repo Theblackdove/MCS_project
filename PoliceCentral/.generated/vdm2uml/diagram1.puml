@@ -1,6 +1,8 @@
 @startuml PoliceCentral
 
 hide empty members
+hide fields
+hide IO methods 
 skinparam Shadowing false
 skinparam classAttributeIconSize 0
 skinparam ClassBorderThickness 0.5
@@ -12,46 +14,24 @@ skinparam class {
 }
 skinparam defaultTextAlignment center
 
-class System
-{
-}
-
-class World
-{
-	+World() : World
-	+Run()
-}
-
-class PoliceCentral
-{
-	-patroleLocations : map  to :: 
-	-tasks : seq of :: 
-	-busy : bool
-	+addPatrole(Patrole)
-	+addMultiplePatroles(set of Patrole)
-	+Step()
-	-closestPatrole(map  to ::, TaskType, ::) : [ID]
-	-distToTask(::, ::) : real
-	-sqrt(real, real) : real
-	+addTask(::)
-	-getTask() : :: 
-	+isFinished() : bool
-	-printPatroleStatus()
-	-printTask(::)
-}
-
 class Global
 {
 	+taskPriority : map TaskType to Priority <<value>>
 	+patrolePriority : map PatroleType to  <<value>>
 	+Time : nat <<type>>
-	+ID : nat1 <<type>>
+	+ID : nat <<type>>
 	+Priority : nat <<type>>
 	+Coordinates : ::  <<type>>
 	+Task : ::  <<type>>
 	+PatroleType : <PatroleA> | <PatroleB> | <PatroleC> | <PatroleD> <<type>>
 	+TaskType : <TaskA> | <TaskB> | <TaskC> | <TaskD> <<type>>
 	+String : seq of char <<type>>
+}
+
+class World
+{
+	+World() : World
+	+Run()
 }
 
 class Environment
@@ -65,33 +45,55 @@ class Environment
 	+Environment(String) : Environment
 	+Run()
 	-createSignal() : [ID]
-	+handleTask(::, [PatroleType], [:: ], [real])
+	+handleTask(Task, [PatroleType], [Coordinates], [real])
 	+showResult()
 	+isFinished() : bool
 }
 
-class Patrole
-{
-	-p_type : PatroleType
-	-p_loc : :: 
-	-currentPriority : Priority
-	-distToTask : [real]
-	-curTask : [:: ]
-	-TaskDoneTime : Time
-	-busy : bool
-	+Patrole(PatroleType, ::) : Patrole
-	+Step()
-	+addTask(::, real)
-	-sendPatrole(::)
-	+isFinished() : bool
-	+set_location(::)
-	+get_location() : :: 
-	+get_patroleType() : PatroleType
-	+set_currentPriority(Priority)
-	+get_currentPriority() : Priority
-	+get_curTask() : [:: ]
-	+setDistToTask(real)
-}
+
+	class PoliceCentral
+	{
+		-patroleLocations : map  to Coordinates 
+		-tasks : seq of Task 
+		-busy : bool
+		+addPatrole(Patrole)
+		+addMultiplePatroles(set of Patrole)
+		+Step()
+		-closestPatrole(map  to Coordinates, TaskType, Coordinates) : [ID]
+		-distToTask(Coordinates, Coordinates) : real
+		-sqrt(real, real) : real
+		+addTask(ID, Coordinates, TaskType, Time, Time)
+		-getTask() : Task 
+		+isFinished() : bool
+		-printPatroleStatus()
+		-printTask(Task)
+	}
+
+	class Patrole
+	{
+		-p_type : PatroleType
+		-p_loc : Coordinates 
+		-currentPriority : Priority
+		-distToTask : [real]
+		-curTask : [Task]
+		-TaskDoneTime : Time
+		-busy : bool
+		+Patrole(PatroleType, Coordinates) : Patrole
+		+Step()
+		+addTask(Task, real)
+		-sendPatrole(Coordinates)
+		+isFinished() : bool
+		+set_location(Coordinates)
+		+get_location() : Coordinates 
+		+get_patroleType() : PatroleType
+		+set_currentPriority(Priority)
+		+get_currentPriority() : Priority
+		+get_curTask() : [Task]
+		+setDistToTask(real)
+	}
+
+
+
 
 class IO
 {
@@ -117,21 +119,22 @@ class Timer
 	+GetTime() : nat
 }
 
-System --> PoliceCentral : +policeCentral
-System --> Patrole : +patrole1
-System --> Patrole : +patrole2
-System --> Patrole : +patrole3
-System --> Patrole : +patrole4
-System --> "*" Patrole : +patroleDB
+class System
+{
+}
+
+System "1" --> "1" PoliceCentral : +policeCentral
+System "1" --> "*" Patrole : +patrole 1,\n\npatrole 2,\n.\n.\n.\npatrole n
 Global <|-- System
-World --> Environment : +env
-World --> Timer : +timerRef
-PoliceCentral --> IO : +io
+World "1" --> "0...1" Environment : +env
+World "1" --> "1" Timer : +timerRef
 PoliceCentral "[nat]" --> Patrole : -patroles
+PoliceCentral "1" --> "1" IO : +io
 Global <|-- PoliceCentral
-Environment --> IO : +io
+Environment "1" --> "1" IO : +io
 Global <|-- Environment
 Global <|-- Patrole
-Timer --> Timer : -timerInstance
+Timer "1" --> "1" Timer : -timerInstance
+
 
 @enduml

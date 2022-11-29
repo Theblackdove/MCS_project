@@ -1,9 +1,18 @@
+\documentclass[a4paper]{article}
+\usepackage{longtable}
+\usepackage[color]{vdmlisting}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\begin{document}
+\title{}
+\author{}
+\begin{vdm_al}
 class World
 
 instance variables  
 
 public static env : [Environment] := nil;
-public static timerRef : Timer := Timer`GetInstance();
+  public static timerRef : Timer := Timer`GetInstance();
 
 operations
 
@@ -23,3 +32,5 @@ Run() ==
   env.Run();
 
 end World
+\end{vdm_al}
+\end{document}

@@ -1,0 +1,17 @@
+class SystemTest
+
+operations
+public Execute : () ==> ()
+Execute() ==
+    let
+        ts = new TestSuite(),
+        testResult = new TestResult()
+    in
+    (
+        ts.addTest(new PoliceCentralTest());
+        --ts.addTest(new PatroleTest());
+        ts.run(testResult);
+        IO`println(testResult.toString());
+    );
+
+end SystemTest

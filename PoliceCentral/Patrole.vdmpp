@@ -1,85 +1,75 @@
-class Patrole is subclass of Global
+class Patrole is subclass of GLOBAL
 
 values
 
 types
 
 instance variables
-    --patroleId        : ID;
-    p_type           : PatroleType;
-    p_loc            : Coordinates;
-    currentPriority  : Priority := 0;
-    distToTask       : [real] := nil;
-    curTask          : [Task] := nil;
+p_type           : PatroleType;
+p_loc            : Coordinates;
+currentPriority  : Priority := 0;
+distToTask       : [real] := nil;
+curTask          : [Task] := nil;
     
-    TaskDoneTime     : Time := 0;
-    busy             : bool := false;
+TaskDoneTime     : Time := 0;
+busy             : bool := false;
 
 operations
     -- Class constructor
-    public Patrole: PatroleType * Coordinates ==> Patrole
-    Patrole(pType, pCoord) ==
+public Patrole: PatroleType * Coordinates ==> Patrole
+Patrole(pType, pCoord) ==
+(
+    p_type := pType;
+    p_loc := pCoord;
+);
+
+public Step: () ==> ()
+Step() ==
+(
+    dcl newtime : Time := World`timerRef.GetTime();
+    if
+        busy = true 
+    then
     (
-        --patroleId := pId;
-        p_type := pType;
-        p_loc := pCoord;
+        sendPatrole(curTask);
+        set_location(curTask.t_loc);
     );
-
-    public Step: () ==> ()
-    Step() ==
-        (
-            dcl newtime : Time := World`timerRef.GetTime();
-            if
-                busy = true 
-            then
-            (
-                sendPatrole(curTask);
-                set_location(curTask.t_loc);
-            );
-            if 
-                newtime = TaskDoneTime
-            then
-            (
-                curTask := nil;
-                distToTask := nil;
-                TaskDoneTime := 0;
-                currentPriority := 0;
-            );
-            busy := false
-        );
-
-
-    public addTask: Task * real ==> ()
-    addTask(pTask, pDist) ==
+    if 
+        newtime = TaskDoneTime
+    then
     (
-        curTask := pTask;
-        distToTask := pDist;
-        TaskDoneTime := curTask.t_time + curTask.t_duration;
-        set_currentPriority(taskPriority(curTask.t_type));
-        busy := true;
+        curTask := nil;
+        distToTask := nil;
+        TaskDoneTime := 0;
+        currentPriority := 0;
     );
+    busy := false
+);
 
-    private sendPatrole: Task ==> ()
-    sendPatrole(pTask) == 
-        --World`env.handleTask(pTask.t_id, p_type, p_loc, pTask.t_type, pTask.t_loc, distToTask, pTask.t_time);
-        World`env.handleTask(pTask, p_type, p_loc, distToTask);
-        --public handleTask: [Task * PatroleType * Coordinates * real] ==> ()
 
-    public isFinished: () ==> bool
-    isFinished () == 
-        return not busy;
+public addTask: Task * real ==> ()
+addTask(pTask, pDist) ==
+(
+    curTask := pTask;
+    distToTask := pDist;
+    TaskDoneTime := curTask.t_time + curTask.t_duration;
+    set_currentPriority(taskPriority(curTask.t_type));
+    busy := true;
+);
+
+private sendPatrole: Task ==> ()
+sendPatrole(pTask) == 
+    --World`env.handleTask(pTask.t_id, p_type, p_loc, pTask.t_type, pTask.t_loc, distToTask, pTask.t_time);
+    World`env.handleTask(pTask, p_type, p_loc, distToTask);
+    --public handleTask: [Task * PatroleType * Coordinates * real] ==> ()
+
+public isFinished: () ==> bool
+isFinished () == 
+    return not busy;
     
 -----------------------------------------------------------------------------
 -- Class specific set/get operations 
------------------------------------------------------------------------------
-    /* public set_patroleId: ID ==> ()
-    set_patroleId(pId) ==
-        patroleId := pId;
-
-    pure public get_patroleId: () ==> ID
-    get_patroleId() ==
-        return patroleId;  */
-    
+-----------------------------------------------------------------------------    
     public set_location: Coordinates ==> ()
     set_location(pLoc) == 
         p_loc := pLoc; 

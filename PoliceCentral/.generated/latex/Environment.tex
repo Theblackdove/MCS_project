@@ -1,0 +1,98 @@
+\documentclass[a4paper]{article}
+\usepackage{longtable}
+\usepackage[color]{vdmlisting}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\begin{document}
+\title{}
+\author{}
+\begin{vdm_al}
+class Environment is subclass of Global
+
+types
+
+    public inline = ID * TaskType * nat * nat * Time * Time;
+    protected outline = ID * [PatroleType] * [Coordinates] * TaskType * Coordinates * [real] * Time;
+
+instance variables 
+
+    public io : IO := new IO();
+    inlines  : seq of inline  := [];
+    outlines : seq of outline := [];
+
+    taskId : [ID] := nil;
+    busy : bool := true;
+  
+operations
+
+    public Environment : String ==> Environment
+    Environment(fname) == 
+    def 
+        mk_(-,input) = io.freadval[seq of inline](fname)
+    in
+        inlines := input;
+
+    public Run : () ==> ()
+    Run() ==
+        (while not isFinished() and System`policeCentral.isFinished()
+        do 
+        (
+            taskId := createSignal();
+            System`policeCentral.Step();
+            World`timerRef.StepTime();
+        );  
+        showResult()
+        );
+
+    private createSignal: () ==> [ID]
+    createSignal() ==
+        (
+            if len inlines > 0
+            then
+            (
+                dcl curTime : Time := World`timerRef.GetTime(),
+                    done : bool := false;
+                while not done do 
+                    let
+                        mk_(tId, ptaskType, x, y, pTime, pTaskDuration) = hd inlines
+                    in
+                        if pTime <= curTime
+                        then
+                        (
+                            dcl pCoord : Coordinates := mk_Coordinates(x,y);
+                            System`policeCentral.addTask(tId, pCoord, ptaskType, pTime, pTaskDuration);   -- CHange to TASK type
+                            inlines := tl inlines;
+                            done := len inlines = 0;
+                            return tId;
+                        )
+                        else
+                        (
+                            done := true;
+                            return nil
+                        )
+            )
+            else
+            (
+                busy := false;
+                return nil
+            )    
+        );
+
+    public handleTask: Task * [PatroleType] * [Coordinates] * [real] ==> ()
+    handleTask (pTask, p_type, p_loc, pDist) ==
+        (
+            let mk_Task(t_id, t_loc, t_type, t_time, -) = pTask
+            in outlines := outlines ^ [mk_(t_id, p_type, p_loc, t_type, t_loc, pDist, t_time)]
+        );
+    
+    public showResult : () ==> ()
+    showResult() ==
+        def - = io.writeval[seq of outline](outlines) in skip;
+
+    public isFinished : () ==> bool 
+    isFinished() == 
+        return inlines = [] and not busy;
+    
+end Environment
+\end{vdm_al}
+\end{document}

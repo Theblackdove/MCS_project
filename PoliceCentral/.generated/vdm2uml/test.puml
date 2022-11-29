@@ -1,0 +1,35 @@
+hide empty members
+
+skinparam Shadowing false
+skinparam classAttributeIconSize 0
+skinparam ClassBorderThickness 0.5
+skinparam groupInheritance 5
+skinparam class {
+	BackgroundColor AntiqueWhite
+	ArrowColor Black
+	BorderColor Black
+}
+skinparam defaultTextAlignment center
+
+class Patrole
+	{
+		-p_type : PatroleType
+		-p_loc : Coordinates 
+		-currentPriority : Priority
+		-distToTask : [real]
+		-curTask : [Task]
+		-TaskDoneTime : Time
+		-busy : bool
+		+Patrole(PatroleType, Coordinates) : Patrole
+		+Step()
+		+addTask(Task, real)
+		-sendPatrole(Coordinates)
+		+isFinished() : bool
+		+set_location(Coordinates)
+		+get_location() : Coordinates 
+		+get_patroleType() : PatroleType
+		+set_currentPriority(Priority)
+		+get_currentPriority() : Priority
+		+get_curTask() : [Task]
+		+setDistToTask(real)
+	}
