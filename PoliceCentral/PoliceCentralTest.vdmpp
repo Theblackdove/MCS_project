@@ -17,13 +17,14 @@ task4 : Task = mk_Task(4, mk_Coordinates(3, 3), <TaskC>, 600, 100);
 taskLoc : Coordinates = mk_Coordinates(4,4);
 patroleLoc : Coordinates = mk_Coordinates(1,1);
 
-
+starTime : Time := 0;
 operations
 
 protected runTest : () ==> ()
 runTest() ==
 (
     calculateDistanceTest();
+    closestPatroleTest();
 );
 
 protected calculateDistanceTest : () ==> ()
@@ -37,8 +38,9 @@ protected closestPatroleTest : () ==> ()
 closestPatroleTest() ==
 (
     dcl policeCentral2 : PoliceCentral := new PoliceCentral();
-    policeCentral2.addMultiplePatroles(patroleDB);
-    assertTrue(policeCentral2.closestPatrole(policeCentral2.patroleLocations, task1.t_type,task1.t_loc) = 1);
+    --policeCentral2.addMultiplePatroles(patroleDB);
+    assertTrue(policeCentral2.closestPatrole(dom policeCentral2.patroles, task1.t_type,task1.t_loc) = 2);
+    World`timerRef.StepTime()
 );
 
 end PoliceCentralTest

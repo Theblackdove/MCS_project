@@ -9,7 +9,7 @@ Execute() ==
     in
     (
         ts.addTest(new PoliceCentralTest());
-        --ts.addTest(new PatroleTest());
+        ts.addTest(new closestPatroleTest());
         ts.run(testResult);
         IO`println(testResult.toString());
     );

@@ -6,8 +6,8 @@ instance variables
 
 public io : IO := new IO();
 -- links to Patroles and locations
-patroleLocations : map nat to Coordinates := {|->};
-patroles         : map nat to Patrole := {|->};
+public patroleLocations : map nat to Coordinates := {|->};
+public patroles         : map nat to Patrole := {|->};
 inv dom patroleLocations = dom patroles;
     
 -- Store the tasks arriving from the environment
@@ -48,7 +48,7 @@ Step() ==
     if tasks <> []
     then
         let curTask = getTask(),
-            ids : set of ID = dom patroleLocations,
+            ids : set of ID = dom patroles,
             id = closestPatrole(ids, curTask.t_type, curTask.t_loc)
         in
         (
@@ -107,33 +107,33 @@ distToTask(patroleLocs, pTaskCoord) ==
     return res
 );
 
-    -- Operation to approximate the square root of real number with error, e.
-    -- From book, VDM-10 Language Manual (p. 123) 
-    private sqrt: real * real ==> real
-    sqrt(r,e) ==
+-- Operation to approximate the square root of real number with error, e.
+-- From book, VDM-10 Language Manual (p. 123) 
+private sqrt: real * real ==> real
+sqrt(r,e) ==
+(
+    if r = 0
+    then return 0
+    else 
+    (
+        dcl x: real := 1,
+        nextx: real := r;
+        while abs(x-nextx) >= e * r  do
         (
-            if r = 0
-            then return 0
-            else 
-            (
-                dcl x: real := 1,
-                nextx: real := r;
-                while abs(x-nextx) >= e * r  do
-                    (
-                        x := nextx;
-                        nextx := ((r / x) + x) / 2;
-                    );
-                return nextx
-            )
-        )
+            x := nextx;
+            nextx := ((r / x) + x) / 2;
+        );
+        return nextx
+    )
+)
     pre r >= 0;
 
-    /* public addTask: ID * Coordinates * TaskType * Time * Time ==> ()
-    addTask(pId, pCoord, pTaskType, pTime, pTaskDuration) ==
-        (
-            tasks := tasks ^ [mk_Task(pId, pCoord, pTaskType, pTime, pTaskDuration)];
-            busy := true
-        ); */
+/* public addTask: ID * Coordinates * TaskType * Time * Time ==> ()
+addTask(pId, pCoord, pTaskType, pTime, pTaskDuration) ==
+(
+    tasks := tasks ^ [mk_Task(pId, pCoord, pTaskType, pTime, pTaskDuration)];
+    busy := true
+); */
 public addTask: Task ==> ()
 addTask(pTask) ==
     (tasks := tasks ^ [pTask];
