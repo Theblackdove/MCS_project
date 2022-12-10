@@ -1,4 +1,4 @@
-class Patrole is subclass of GLOBAL
+class Patrole is subclass of Global
 
 values
 
@@ -15,7 +15,7 @@ TaskDoneTime     : Time := 0;
 busy             : bool := false;
 
 operations
-    -- Class constructor
+-- Class constructor
 public Patrole: PatroleType * Coordinates ==> Patrole
 Patrole(pType, pCoord) ==
 (
@@ -59,9 +59,9 @@ addTask(pTask, pDist) ==
 
 private sendPatrole: Task ==> ()
 sendPatrole(pTask) == 
-    --World`env.handleTask(pTask.t_id, p_type, p_loc, pTask.t_type, pTask.t_loc, distToTask, pTask.t_time);
     World`env.handleTask(pTask, p_type, p_loc, distToTask);
-    --public handleTask: [Task * PatroleType * Coordinates * real] ==> ()
+    --Out comment line above and use skip when SystemTest is executed.
+    --skip;
 
 public isFinished: () ==> bool
 isFinished () == 
@@ -70,32 +70,37 @@ isFinished () ==
 -----------------------------------------------------------------------------
 -- Class specific set/get operations 
 -----------------------------------------------------------------------------    
-    public set_location: Coordinates ==> ()
-    set_location(pLoc) == 
-        p_loc := pLoc; 
+public set_location: Coordinates ==> ()
+set_location(pLoc) == 
+    p_loc := pLoc; 
 
-    pure public get_location: () ==> Coordinates
-    get_location() == 
-        return p_loc;
+pure public get_location: () ==> Coordinates
+get_location() == 
+    return p_loc;
 
-    pure public get_patroleType: () ==> PatroleType
-    get_patroleType() == 
-        return p_type;
+pure public get_patroleType: () ==> PatroleType
+get_patroleType() == 
+    return p_type;
 
-    public set_currentPriority: Priority ==> ()
-    set_currentPriority(pCurrent) == 
-        currentPriority := pCurrent;
+public set_currentPriority: Priority ==> ()
+set_currentPriority(pCurrent) == 
+    currentPriority := pCurrent;
 
-    pure public get_currentPriority: () ==> Priority
-    get_currentPriority() == 
-        return currentPriority;
+pure public get_currentPriority: () ==> Priority
+get_currentPriority() == 
+    return currentPriority;
 
-    public get_curTask: () ==> [Task]
-    get_curTask() ==
-        return curTask;
-    
-    public setDistToTask: real ==> ()
-    setDistToTask(pdist) ==
-        distToTask := pdist;
+public get_curTask: () ==> [Task]
+get_curTask() ==
+    return curTask;
+
+pure public get_taskDoneTime: () ==> Time
+get_taskDoneTime() ==
+    return TaskDoneTime;
+
+
+/* public setDistToTask: real ==> ()
+setDistToTask(pdist) ==
+    distToTask := pdist; */
 
 end Patrole

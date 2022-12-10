@@ -1,4 +1,4 @@
-class GLOBAL
+class Global
 
 values  
 
@@ -19,15 +19,13 @@ types
 public Time = nat;
     
 public ID = nat1;
---inv id == id > 0;
     
 public Priority = nat;
---inv p == p >= 0;
     
 public Coordinates :: 
     x : nat 
     y : nat
-inv coord == coord.x < 50 and coord.y < 50;
+inv coord == coord.x <= 50 and coord.y <= 50;
 
 public Task ::
     t_id       : ID
@@ -42,4 +40,4 @@ public TaskType = <TaskA> | <TaskB> | <TaskC> | <TaskD>;
     
 public String = seq of char;
     
-end GLOBAL
+end Global

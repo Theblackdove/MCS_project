@@ -1,4 +1,4 @@
-class PoliceCentral is subclass of GLOBAL
+class PoliceCentral is subclass of Global
 
 values
 
@@ -41,18 +41,17 @@ addMultiplePatroles(sPatrole) ==
     );
 );
 
-
 public Step: () ==> ()
 Step() ==
 (
     if tasks <> []
     then
         let curTask = getTask(),
-            ids : set of ID = dom patroles,
+            ids = dom patroles,
             id = closestPatrole(ids, curTask.t_type, curTask.t_loc)
         in
         (
-            printTask(curTask);
+            printTask(curTask, id);
             if id <> nil
             then
             (  
@@ -61,17 +60,18 @@ Step() ==
             )
             else
             (   
-                io.print("!!!NO AVAILABLE PATROLE FOR TASK!!!\n\n");
                 World`env.handleTask(curTask, nil, nil, nil);
             );  
         );         
     busy := len tasks > 0;
-            
-    printPatroleStatus();
-    for all id in set dom patroles do 
-        patroles(id).Step()
-);
 
+    printPatroleStatus();        
+    
+    for all id in set dom patroles do 
+        patroles(id).Step();
+    
+    
+);
     
 public closestPatrole: set of ID * TaskType * Coordinates ==> [ID]
 closestPatrole(pIds, pTaskType, pTaskCoord) ==
@@ -80,7 +80,7 @@ closestPatrole(pIds, pTaskType, pTaskCoord) ==
     while ids <> {} do
     (
         let
-            -- Finds the closest patrole in temporary patroleDB
+            -- Finds the closest patrole in temporary patroleIdDB, ids
             id1 in set ids be st forall id2 in set ids
             & distToTask(patroleLocations(id1), pTaskCoord) <= distToTask(patroleLocations(id2), pTaskCoord)
         in
@@ -90,7 +90,7 @@ closestPatrole(pIds, pTaskType, pTaskCoord) ==
             then
                 return id1
             else
-                -- Remove the closest patrole from temporary patroleDB (not suitable for task) 
+                -- Remove the closest patrole from temporary patroleIdDB (not suitable for task) 
                 ids := ids \ {id1}
     );
     return nil
@@ -152,35 +152,41 @@ isFinished () ==
 ------------------------------------------------
 -- Operations for printing out result
 ------------------------------------------------
-    printPatroleStatus: () ==> ()
-    printPatroleStatus() ==
+public printPatroleStatus: () ==> ()
+printPatroleStatus() ==
+(
+    io.print("STATUS\n");     
+    io.printf("Time  %s:\tPatroleType\tLoc\tPrio\tTask\tTask Done\n", [World`timerRef.GetTime()]);
+    io.print("------------------------------------------------------------------\n");
+    for all id in set dom patroles do
     (
-        io.print("STATUS\n");     
-        io.printf("Time  %s:\tPatroleType\tLoc\tPrio\tTask\tTask Done\n", [World`timerRef.GetTime()]);
-        io.print("------------------------------------------------------------------\n");
-        for all id in set dom patroles do
-        (
-            dcl task : [Task] := patroles(id).get_curTask();
-            io.printf("Patrole %s:\t", [id]);
-            io.printf("%s\t", [patroles(id).get_patroleType()]); 
-            io.printf("(%s,%s)\t", [patroles(id).get_location().x, patroles(id).get_location().y]);
-            io.printf("%s\t", [patroles(id).get_currentPriority()]); 
-            if task = nil
-            then 
-            (    
-                io.print(task);io.print("\t");io.print(task);io.print("\n")
-            )
-            else io.printf("%s\t%s\n", [task.t_type, task.t_duration+World`timerRef.GetTime()]);
+        dcl task : [Task] := patroles(id).get_curTask();
+        io.printf("Patrole %s:\t", [id]);
+        io.printf("%s\t", [patroles(id).get_patroleType()]); 
+        io.printf("(%s,%s)\t", [patroles(id).get_location().x, patroles(id).get_location().y]);
+        io.printf("%s\t", [patroles(id).get_currentPriority()]); 
+        if task = nil
+        then 
+        (    
+            io.print(task);io.print("\t");io.print(task);io.print("\n");
+        )
+            else io.printf("%s\t%s\n", [task.t_type, patroles(id).get_taskDoneTime()+1]);
         );
-        io.print("------------------------------------------------------------------\n\n");
-    );
+    io.print("------------------------------------------------------------------\n");
+);
 
-    printTask: Task ==> ()
-    printTask(pTask) ==
-        ( 
-            io.print("#################################################\n");
-            io.printf("%s received at time: %s, location: (%s,%s)\n", [pTask.t_type, pTask.t_time, pTask.t_loc.x, pTask.t_loc.y]);
-            io.print("#################################################\n\n");
-        );
+public printTask: Task * [ID] ==> ()
+printTask(pTask, pId) ==
+( 
+    io.print("##################################################################\n");
+    io.printf("%s received at time: %s, location: (%s,%s), duration: %s\n", [pTask.t_type, pTask.t_time, pTask.t_loc.x, pTask.t_loc.y, pTask.t_duration]);
+    if pId = nil
+    then 
+        (io.print("!!!NO AVAILABLE PATROLE FOR TASK!!!\n");
+        io.print("##################################################################\n")) 
+    else
+        (io.printf("%s with ID %s assigned to task\n", [patroles(pId).get_patroleType(), pId]);
+        io.print("##################################################################\n"));
+);
 
 end PoliceCentral

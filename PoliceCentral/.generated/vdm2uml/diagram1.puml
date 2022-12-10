@@ -123,6 +123,30 @@ class System
 {
 }
 
+
+class TestCase
+{
+
+}
+
+class SystemTest
+{
+	+Execute : ()
+}
+
+/' class PoliceCentralTest
+{
+	#RunTest : ()
+	#calculateDistanceTest : ()
+    #closestPatroleTest : () 
+}
+
+class PatroleTest
+{
+	#RunTest : ()
+	#PriorityTest : ()
+} '/
+
 System "1" --> "1" PoliceCentral : +policeCentral
 System "1" --> "*" Patrole : +patrole 1,\n\npatrole 2,\n.\n.\n.\npatrole n
 Global <|-- System

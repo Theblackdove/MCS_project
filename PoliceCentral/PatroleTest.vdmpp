@@ -1,0 +1,30 @@
+class PatroleTest is subclass of TestCase, Global
+
+values
+
+task : Task = mk_Task(1, mk_Coordinates(6, 6), <TaskB>, 1, 2);
+
+operations
+
+protected runTest : () ==> ()
+runTest() ==
+(
+    priorityTest();
+);
+
+protected priorityTest : () ==> ()
+priorityTest() ==
+(
+    dcl patrole : Patrole := new Patrole(<PatroleB>, mk_Coordinates(3,3));
+    World`timerRef.StepTime();
+    patrole.addTask(task, 4.2426);
+    patrole.Step();
+    World`timerRef.StepTime();
+    assertTrue(patrole.get_currentPriority() = 2);
+    patrole.Step();
+    World`timerRef.StepTime();
+    patrole.Step();    
+    assertTrue(patrole.get_currentPriority() = 0);
+);
+
+end PatroleTest

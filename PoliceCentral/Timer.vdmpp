@@ -1,29 +1,29 @@
 class Timer 
 
 instance variables
-    public currentTime : nat := 0;
-    private static timerInstance : Timer := new Timer();
+public currentTime : nat := 0;
+private static timerInstance : Timer := new Timer();
 
 values 
-    stepLength : nat = 100;
+stepLength : nat = 1;
 
 operations
 
-    -- Class Constructor
-    private Timer: () ==> Timer
-    Timer() ==
-        skip;
+-- Class Constructor
+private Timer: () ==> Timer
+Timer() ==
+    skip;
 
-    pure public static GetInstance: () ==> Timer
-    GetInstance() ==
-        return timerInstance;
+pure public static GetInstance: () ==> Timer
+GetInstance() ==
+    return timerInstance;
 
-    public StepTime: () ==> ()
-    StepTime() == 
-	    currentTime := currentTime + stepLength;
+public StepTime: () ==> ()
+StepTime() == 
+	currentTime := currentTime + stepLength;
     
-    pure public GetTime : () ==> nat
-    GetTime() ==
-        return currentTime;
+pure public GetTime : () ==> nat
+GetTime() ==
+    return currentTime;
 
 end Timer
